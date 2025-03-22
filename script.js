@@ -47,6 +47,8 @@ function llamar(persona) {
 
 async function iniciarLlamada(esIniciador) {
   const localVideo = document.getElementById('localVideo');
+  const remoteVideo = document.getElementById('remoteVideo');
+
   localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
   localVideo.srcObject = localStream;
 
@@ -55,6 +57,12 @@ async function iniciarLlamada(esIniciador) {
   localStream.getTracks().forEach(track => {
     peerConnection.addTrack(track, localStream);
   });
+
+  peerConnection.ontrack = (event) => {
+    if (remoteVideo.srcObject !== event.streams[0]) {
+      remoteVideo.srcObject = event.streams[0];
+    }
+  };
 
   peerConnection.onicecandidate = event => {
     if (event.candidate) {
