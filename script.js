@@ -9,7 +9,7 @@ const configuration = {
 
 socket.on("connect", () => {
   console.log("🔌 Conectado al servidor de señalización:", socket.id);
-  socket.emit("join", "sala-demo"); // Puedes cambiar el nombre de la sala
+  socket.emit("join", "sala-demo");
 });
 
 socket.on("user-connected", async (socketId) => {
@@ -38,7 +38,6 @@ socket.on("candidate", (data) => {
 function llamar(persona) {
   document.getElementById('estadoLlamada').textContent = `Llamando a ${persona}...`;
 
-  // Simulación de llamada
   setTimeout(() => {
     document.getElementById('estadoLlamada').textContent = `${persona} ha contestado la llamada.`;
     iniciarLlamada(true);
@@ -58,10 +57,10 @@ async function iniciarLlamada(esIniciador) {
     peerConnection.addTrack(track, localStream);
   });
 
-  peerConnection.ontrack = (event) => {
-    if (remoteVideo.srcObject !== event.streams[0]) {
-      remoteVideo.srcObject = event.streams[0];
-    }
+  // 🎯 Mostrar el video remoto
+  peerConnection.ontrack = event => {
+    console.log("🎥 Recibiendo video remoto");
+    remoteVideo.srcObject = event.streams[0];
   };
 
   peerConnection.onicecandidate = event => {
