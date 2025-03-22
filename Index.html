@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Llamadas Familia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Llamar a un familiar</h1>
+  <div class="usuarios">
+    <button onclick="llamar('mama')">Llamar a Mamá</button>
+    <button onclick="llamar('papa')">Llamar a Papá</button>
+    <button onclick="llamar('hermano')">Llamar a Hermano</button>
+    <button onclick="llamar('hermana')">Llamar a Hermana</button>
+    <button onclick="llamar('abuela')">Llamar a Abuela</button>
+  </div>
+  <div class="estado" id="estadoLlamada">Esperando llamada...</div>
+
+  <!-- Opcional: video -->
+  <video id="localVideo" autoplay muted></video>
+  <video id="remoteVideo" autoplay></video>
+
+  <script src="script.js"></script>
+</body>
+</html>
