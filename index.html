@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Llamadas Familia</title>
@@ -7,6 +7,7 @@
 </head>
 <body>
   <h1>Llamar a un familiar</h1>
+
   <div class="usuarios">
     <button onclick="llamar('mama')">Llamar a Mamá</button>
     <button onclick="llamar('papa')">Llamar a Papá</button>
@@ -14,15 +15,19 @@
     <button onclick="llamar('hermana')">Llamar a Hermana</button>
     <button onclick="llamar('abuela')">Llamar a Abuela</button>
   </div>
+
   <div class="estado" id="estadoLlamada">Esperando llamada...</div>
 
-  <!-- Opcional: video -->
-  <video id="localVideo" autoplay muted></video>
-  <video id="remoteVideo" autoplay></video>
+  <!-- Sección de videos para mostrar local y remoto -->
+  <div class="videos">
+    <video id="localVideo" autoplay muted></video>
+    <video id="remoteVideo" autoplay></video>
+  </div>
 
   <!-- 🔌 Socket.IO desde CDN -->
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
+  <!-- Tu script principal -->
   <script src="script.js"></script>
 </body>
 </html>
