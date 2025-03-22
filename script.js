@@ -1,24 +1,70 @@
+// Conexión con el servidor de señalización en Glitch
+const socket = io("https://patch-supreme-laugh.glitch.me");
+
+let localStream;
+let peerConnection;
+const configuration = {
+  iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+};
+
+socket.on("connect", () => {
+  console.log("🔌 Conectado al servidor de señalización:", socket.id);
+  socket.emit("join", "sala-demo"); // Puedes cambiar el nombre de la sala
+});
+
+socket.on("user-connected", async (socketId) => {
+  console.log("👤 Otro usuario conectado:", socketId);
+  iniciarLlamada(true); // true = iniciador de la llamada
+});
+
+socket.on("offer", async (data) => {
+  await iniciarLlamada(false);
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setLocalDescription(answer);
+  socket.emit("answer", { room: "sala-demo", answer });
+});
+
+socket.on("answer", async (data) => {
+  await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+});
+
+socket.on("candidate", (data) => {
+  if (peerConnection) {
+    peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+  }
+});
+
 function llamar(persona) {
   document.getElementById('estadoLlamada').textContent = `Llamando a ${persona}...`;
 
   // Simulación de llamada
   setTimeout(() => {
     document.getElementById('estadoLlamada').textContent = `${persona} ha contestado la llamada.`;
-
-    // Aquí es donde luego iría el WebRTC para conectar audio/video
-    iniciarLlamada();
-
+    iniciarLlamada(true);
   }, 2000);
 }
 
-function iniciarLlamada() {
+async function iniciarLlamada(esIniciador) {
   const localVideo = document.getElementById('localVideo');
+  localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+  localVideo.srcObject = localStream;
 
-  navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-    .then(stream => {
-      localVideo.srcObject = stream;
-    })
-    .catch(err => {
-      alert('Error al acceder a la cámara o micrófono: ' + err);
-    });
+  peerConnection = new RTCPeerConnection(configuration);
+
+  localStream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  peerConnection.onicecandidate = event => {
+    if (event.candidate) {
+      socket.emit("candidate", { room: "sala-demo", candidate: event.candidate });
+    }
+  };
+
+  if (esIniciador) {
+    const offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    socket.emit("offer", { room: "sala-demo", offer });
+  }
 }
